@@ -1,0 +1,366 @@
+/* Face Smash design tokens.
+ *
+ * No webfonts on purpose. Every other runtime asset is served from disk so the
+ * app works with the wifi unplugged, and a render-blocking CDN font request
+ * would undo that at exactly the venue where it matters. System stacks only. */
+
+:root {
+  --ink: #14141f;
+  --paper: #f4f1e8;
+  --paper-2: #fffdf6;
+
+  --night: #0a0a12;
+  --panel: #141426;
+  --panel-2: #1b1b31;
+  --line: #2a2a45;
+
+  --text: #f4f4f8;
+  --text-dim: #8d8da8;
+
+  --pink: #ff2e88;
+  --pink-soft: #ff6aa8;
+  --yellow: #ffe14d;
+  --mint: #3ef0b0;
+  --blue: #4b9dff;
+  --danger: #ff4d4d;
+
+  --display: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--body);
+  background: var(--night);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- shell & grunge header ---------- */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.shell-main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.grunge-header {
+  position: relative;
+  background: #0f0e1a;
+  border-bottom: 2px solid rgba(255, 46, 136, 0.35);
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.header-splatter-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% -30%, rgba(255, 46, 136, 0.65) 0%, transparent 42%),
+    radial-gradient(ellipse at 88% -30%, rgba(255, 46, 136, 0.5) 0%, transparent 38%),
+    linear-gradient(180deg, rgba(255, 46, 136, 0.18) 0%, transparent 100%);
+  opacity: 0.9;
+}
+
+.grunge-header::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, #ff2e88 0px, #ff2e88 18px, transparent 18px, transparent 24px);
+  opacity: 0.3;
+}
+
+.nav-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  gap: 16px;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.crown-doodle {
+  width: 32px;
+  height: 22px;
+  filter: drop-shadow(0 0 6px rgba(255, 225, 77, 0.7));
+}
+
+.brand-titles {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.brand-word.face {
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(255, 46, 136, 0.9), 2px 2px 0px #ff2e88;
+  margin-right: 4px;
+}
+
+.brand-word.smash {
+  color: #ffe14d;
+  text-shadow: 0 0 14px rgba(255, 225, 77, 0.8), 2px 2px 0px #0a0a12;
+}
+
+.tagline-cursive {
+  font-family: ui-rounded, "Comic Sans MS", "Chalkboard SE", cursive, system-ui, sans-serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: #ff6aa8;
+  margin-left: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  text-shadow: 0 0 8px rgba(255, 46, 136, 0.4);
+}
+
+.center-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(20, 20, 36, 0.85);
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+.nav-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a6a6c2;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nav-pill-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-pill-btn.smash-lab-btn.active {
+  background: #ffe14d;
+  color: #14141f;
+  box-shadow: 0 0 18px rgba(255, 225, 77, 0.65);
+  font-weight: 800;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.audio-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(12, 28, 20, 0.9);
+  border: 1px solid rgba(62, 240, 176, 0.4);
+  color: #3ef0b0;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.4px;
+}
+
+.audio-pill-btn:hover {
+  background: rgba(18, 42, 30, 0.95);
+  border-color: #3ef0b0;
+}
+
+.audio-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #444;
+}
+
+.audio-dot.live {
+  background: #3ef0b0;
+  box-shadow: 0 0 8px #3ef0b0;
+}
+
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(26, 26, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a6a6c2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.settings-btn:hover {
+  color: #ffffff;
+  border-color: var(--pink);
+  background: rgba(36, 36, 56, 0.95);
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-pink { background: var(--pink); color: #fff; }
+.btn-yellow { background: var(--yellow); color: var(--ink); }
+.btn-mint { background: var(--mint); color: var(--ink); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.btn-ghost:hover:not(:disabled) { border-color: var(--pink); color: var(--pink); }
+
+/* ---------- panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+
+.panel-title {
+  margin: 0 0 14px;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ---------- sticky notes & scribbles ---------- */
+
+.sticky {
+  position: relative;
+  display: inline-block;
+  padding: 12px 16px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 3px;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.35);
+  transform: rotate(-2deg);
+}
+.sticky.blue { background: #cfe3ff; }
+.sticky.pink { background: #ffd3e5; }
+.sticky.tilt-r { transform: rotate(2.2deg); }
+
+.scribble {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ---------- step rail ---------- */
+
+.steps { display: flex; align-items: center; gap: 10px; }
+
+.step { display: flex; align-items: center; gap: 8px; }
+
+.step-dot {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.step-label { font-size: 13px; font-weight: 600; color: var(--text-dim); }
+
+.step.done .step-dot { background: var(--mint); border-color: var(--mint); color: var(--ink); }
+.step.done .step-label { color: var(--text); }
+.step.current .step-dot { background: var(--pink); border-color: var(--pink); color: #fff; }
+.step.current .step-label { color: var(--text); }
+
+.step-bar { width: 26px; height: 1px; background: var(--line); }
+
+/* ---------- utility ---------- */
+
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.muted { color: var(--text-dim); }
+.mono { font-family: var(--mono); }
+.center { text-align: center; }
+
+.notice {
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.notice.warn { border-color: var(--yellow); }
+.notice.error { border-color: var(--pink); color: #ffc9dd; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--line);
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

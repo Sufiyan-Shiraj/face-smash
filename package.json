@@ -1,0 +1,41 @@
+{
+  "name": "face-smash",
+  "version": "1.0.0",
+  "description": "See it. Do it. Regret it.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "assets": "node scripts/prepare-assets.mjs",
+    "postinstall": "node scripts/prepare-assets.mjs",
+    "sim": "node scripts/detector-sim.mjs",
+    "sim:physics": "node scripts/physics-sim.mjs",
+    "sim:capture": "node scripts/capture-sim.mjs",
+    "sim:mapping": "node scripts/mapping-sim.mjs",
+    "sim:tracking": "node scripts/tracking-sim.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sufiyan-Shiraj/face-smash.git"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Sufiyan-Shiraj/face-smash/issues"
+  },
+  "homepage": "https://github.com/Sufiyan-Shiraj/face-smash#readme",
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.20.0",
+    "@mediapipe/tasks-vision": "^1.0.1",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.3",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.3.0"
+  },
+  "private": true
+}

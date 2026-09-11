@@ -1,0 +1,233 @@
+.upload {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.upload-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(340px, 1.3fr) minmax(260px, 0.95fr);
+  gap: 34px;
+  padding: 40px 44px;
+  align-items: start;
+}
+
+/* ---------- hero ---------- */
+
+.upload-hero h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -2px;
+}
+.upload-hero h1 span { color: var(--pink); }
+
+.upload-sub {
+  margin: 14px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #55556a;
+}
+
+.upload-note { margin-top: 26px; }
+
+/* ---------- dropzone ---------- */
+
+.dropzone {
+  background: var(--paper-2);
+  border: 1px solid #ddd7c6;
+  border-radius: var(--r-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 0 #e2dcc9;
+}
+.dropzone.over { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255, 46, 136, 0.18); }
+
+.dropzone h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+}
+.dropzone > .muted { margin: 0; text-align: center; color: #6a6a80; font-size: 14px; }
+
+.dropzone-inner {
+  margin-top: 6px;
+  padding: 34px 20px;
+  border: 2px dashed #c9c2ae;
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 210px;
+  justify-content: center;
+}
+.dropzone-inner p { margin: 0; }
+
+.drop-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.drop-big { font-size: 18px; font-weight: 700; }
+
+.drop-limits { font-size: 12px; color: #77778c; text-align: center; margin: 0; }
+
+.dropzone .notice.error { background: #ffe9f1; border-color: var(--pink); color: #8a123f; }
+.dropzone .scribble { color: #8a8a9c; }
+
+/* ---------- aside ---------- */
+
+.upload-aside { display: flex; flex-direction: column; gap: 16px; }
+
+.upload-aside .panel {
+  background: #fffdf6;
+  border-color: #ddd7c6;
+  color: var(--ink);
+  padding: 18px;
+}
+.upload-aside .panel-title { font-size: 15px; margin-bottom: 10px; }
+
+.tips { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.tips li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #3a3a4d;
+}
+.tips li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1fbf84;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.angle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.angle { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
+.angle-thumb {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  background: linear-gradient(150deg, #e6e0cf, #cfc8b4);
+  border: 1px solid #d5cdb9;
+}
+.angle-note { font-size: 12px; line-height: 1.45; margin: 10px 0 0; color: #6a6a80; }
+
+.upload-aside .btn-ghost { color: var(--ink); border-color: #c9c2ae; }
+
+/* ---------- step rail ---------- */
+
+.step-rail {
+  flex: 0 0 auto;
+  background: var(--night);
+  padding: 18px 44px;
+  border-top: 1px solid var(--line);
+}
+.step-group { display: flex; align-items: center; gap: 10px; }
+
+@media (max-width: 1080px) {
+  .upload-body { grid-template-columns: 1fr; gap: 24px; padding: 26px; }
+  .upload-hero h1 { font-size: 44px; }
+  .step-rail { padding: 16px 26px; overflow-x: auto; }
+}
+
+/* ---------- capture CTA + photo slots ---------- */
+
+.upload-cta { margin-top: 20px; width: 100%; }
+.upload-hero .scribble { margin: 8px 0 0; color: #77778c; }
+
+.dropzone .thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+.dropzone .thumb { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.dropzone .thumb canvas {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  background: #ece6d5;
+  border: 2px solid #d5cdb9;
+}
+.dropzone .thumb.got canvas { border-color: #1fbf84; }
+.dropzone .thumb-label { font-size: 11px; font-weight: 700; color: #6a6a80; }
+.dropzone .thumb.got .thumb-label { color: var(--ink); }
+.dropzone .thumb-label em { font-style: normal; opacity: 0.55; }
+
+.drop-log { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.drop-log li { font-size: 12px; line-height: 1.4; padding-left: 16px; position: relative; color: #55556a; }
+.drop-log li::before { position: absolute; left: 0; font-weight: 900; }
+.drop-log li.ok::before { content: "✓"; color: #1fbf84; }
+.drop-log li.no::before { content: "✕"; color: #d6336c; }
+
+/* Single-photo preview. Replaces the three-slot angle strip: the app sends one
+   image to a single-image generator, so three slots were asking the player for
+   two photos that nothing consumed. */
+.shot-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 6px;
+  padding: 12px;
+  border: 2px solid var(--ink, #1b1b1f);
+  border-radius: 14px;
+  background: #fff;
+}
+.shot-preview canvas {
+  width: 116px;
+  height: 116px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #eee;
+  flex: 0 0 auto;
+}
+.shot-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+.shot-meta strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.shot-ok {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a8f4c;
+}
+.shot-note {
+  font-size: 12px;
+  color: #a8700a;
+}
+.btn-tiny {
+  padding: 4px 10px;
+  font-size: 11px;
+}

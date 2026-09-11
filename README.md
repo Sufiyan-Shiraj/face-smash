@@ -15,21 +15,30 @@
 - Member 3: [Name] - [College]
 
 ### Project Description
-[2-3 lines about what your project does]
+Scan your face with a webcam, get a 3D model of your own head, then physically
+slap the air in front of your laptop to beat it up. Your hand is the controller
+— there are no buttons.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+You have never been able to slap yourself in the face without also being slapped
+in the face. Science has ignored this for centuries.
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+Photogrammetry, a physics ragdoll, and real-time hand tracking, wired together
+so your actual arm swing becomes an actual impact on an actual 3D model of your
+actual head. Anime impact frames included. Face not included — you bring that.
 
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
+- **Languages:** JavaScript (ES modules), GLSL
+- **Frameworks:** Three.js + React Three Fiber, Vite
+- **Libraries:** MediaPipe Tasks Vision (hand + face landmarking), Rapier (physics)
+- **Services:** Tripo (photo → 3D head reconstruction)
+- **Tools:** Blender (retopology / rig cleanup)
+
+Runs entirely in the browser. No backend, no server-side inference — the
+webcam feed never leaves the machine.
 
 For Hardware:
 - [List main components]
@@ -39,10 +48,33 @@ For Hardware:
 ### Implementation
 For Software:
 # Installation
-[commands]
+```bash
+npm install
+```
+
+`postinstall` copies MediaPipe's wasm out of `node_modules` and downloads the
+`.task` models into `public/`. Everything the app needs at runtime is served
+from disk — it does not touch a CDN, because venue wifi cannot be trusted.
+To redo that step by hand:
+
+```bash
+npm run assets
+```
 
 # Run
-[commands]
+```bash
+npm run dev
+```
+
+Then open the printed URL and allow camera access. Chrome only allows webcams on
+`localhost` or HTTPS.
+
+Check the strike detector without a camera — synthetic slap trajectories through
+the real detection code:
+
+```bash
+npm run sim
+```
 
 ### Project Documentation
 For Software:
