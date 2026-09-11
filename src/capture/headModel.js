@@ -58,6 +58,14 @@ function emit(patch) {
 
 let timer = null
 let abort = null
+/**
+ * True between clicking and Tripo accepting the job.
+ *
+ * A generation costs real money, so a double-click must not buy two of them.
+ * The guard covers only the submit window: once a job is queued, a further call
+ * is a deliberate "use a different photo" and is allowed to replace it.
+ */
+let submitting = false
 
 function stopPolling() {
   if (timer) clearTimeout(timer)
@@ -94,6 +102,8 @@ export function resetHeadModel() {
  *   finished — the caller is expected to navigate away and let it run.
  */
 export async function generateHead(blob) {
+  if (submitting) return
+  submitting = true
   resetHeadModel()
 
   abort = new AbortController()
@@ -114,6 +124,7 @@ export async function generateHead(blob) {
     const body = await res.json().catch(() => ({}))
 
     if (!res.ok) {
+      submitting = false
       emit({
         status: HEAD_STATUS.FAILED,
         error: body.error || `the 3D service returned ${res.status}`,
@@ -123,12 +134,15 @@ export async function generateHead(blob) {
     }
     taskId = body.taskId
   } catch (err) {
+    submitting = false
     if (err.name === 'AbortError') return
     // A static build has no proxy behind /api, so this is the expected path
     // there rather than a bug. Either way the lab still opens.
     emit({ status: HEAD_STATUS.FAILED, error: 'the 3D service is not reachable' })
     return
   }
+
+  submitting = false
 
   if (!taskId) {
     emit({ status: HEAD_STATUS.FAILED, error: 'the 3D service accepted no job' })
