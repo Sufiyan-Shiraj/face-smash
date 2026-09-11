@@ -75,7 +75,7 @@ export function CombatForearm({ skinColor = SKIN_TONE, handedness = 'right' }) {
   )
 }
 
-export function BoxingGlove({ handedness = 'right', includeForearm = true, model = GLOVE_GLB }) {
+export function BoxingGlove({ handedness = 'right', includeForearm = true, model = GLOVE_GLB, variant = 'boxing' }) {
   const { scene } = useGLTF(model)
   const isLeft = handedness === 'left' || handedness === 'Left'
 
@@ -85,10 +85,37 @@ export function BoxingGlove({ handedness = 'right', includeForearm = true, model
   // The clone is skinDeep: useGLTF caches one scene per URL and every consumer
   // shares it, so mutating it in place would have the left hand's mirror flip
   // the right hand too.
-  const glove = useMemo(
-    () => fitGlove(scene.clone(true), { length: GLOVE_LENGTH, mirror: isLeft }),
-    [scene, isLeft]
-  )
+  const glove = useMemo(() => {
+    const fitted = fitGlove(scene.clone(true), { length: GLOVE_LENGTH, mirror: isLeft })
+    if (variant === 'ducky') {
+      fitted.traverse((child) => {
+        if (child.isMesh && child.material) {
+          child.material = child.material.clone()
+          child.material.color = new THREE.Color('#facc15')
+          child.material.roughness = 0.3
+        }
+      })
+    } else if (variant === 'spiked') {
+      fitted.traverse((child) => {
+        if (child.isMesh && child.material) {
+          child.material = child.material.clone()
+          child.material.color = new THREE.Color('#2d121d')
+          child.material.metalness = 0.55
+          child.material.roughness = 0.4
+        }
+      })
+    } else if (variant === 'hammer') {
+      fitted.traverse((child) => {
+        if (child.isMesh && child.material) {
+          child.material = child.material.clone()
+          child.material.color = new THREE.Color('#718096')
+          child.material.metalness = 0.82
+          child.material.roughness = 0.25
+        }
+      })
+    }
+    return fitted
+  }, [scene, isLeft, variant])
 
   return (
     <group>
@@ -476,12 +503,12 @@ export function ArticulatedHand({ hand, handedness = 'right', includeForearm = t
 }
 
 export default function WeaponMesh({ variant = 'boxing', hand, handedness = 'right', includeForearm = true }) {
-  if (variant === 'fist' || variant === 'wraps' || variant === 'hand') {
+  if (variant === 'fist' || variant === 'wraps' || variant === 'hand' || variant === 'gauntlet') {
     return <ArticulatedHand hand={hand} handedness={handedness} includeForearm={includeForearm} />
   }
   return (
     <Suspense fallback={<ArticulatedHand hand={hand} handedness={handedness} includeForearm={includeForearm} />}>
-      <BoxingGlove handedness={handedness} includeForearm={includeForearm} />
+      <BoxingGlove handedness={handedness} includeForearm={includeForearm} variant={variant} />
     </Suspense>
   )
 }

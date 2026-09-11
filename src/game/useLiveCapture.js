@@ -20,7 +20,7 @@ import { startCamera } from '../tracking/handTracker.js'
 
 const ANALYSIS_SIZE = 160
 
-export function useLiveCapture() {
+export function useLiveCapture({ enabled = true } = {}) {
   const videoRef = useRef(null)
   const collectorRef = useRef(null)
   const [status, setStatus] = useState('idle')
@@ -29,6 +29,11 @@ export function useLiveCapture() {
   const live = useRef({ turn: 0, reason: null, angle: null, faceSeen: false, paused: false })
 
   useEffect(() => {
+    if (!enabled) {
+      setStatus('idle')
+      return
+    }
+
     let cancelled = false
     let scanner = null
     let rafId = null
@@ -127,8 +132,9 @@ export function useLiveCapture() {
       scanner?.close()
       const stream = videoRef.current?.srcObject
       if (stream) for (const t of stream.getTracks()) t.stop()
+      if (videoRef.current) videoRef.current.srcObject = null
     }
-  }, [])
+  }, [enabled])
 
   /** Encode the captured canvases to JPEG for Tripo. */
   const finalize = useCallback(async () => {
