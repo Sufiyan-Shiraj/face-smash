@@ -18,6 +18,8 @@ import {
   playWhoosh,
   playCombo,
   playKnockout,
+  playRamEttanVoice,
+  stopRamEttanVoice,
 } from '../audio/soundEngine.js'
 import { sound } from '../utils/uiAudio.js'
 import { useParallax } from '../utils/useParallax.js'
@@ -344,18 +346,30 @@ export default function Lab() {
         playCombo({ combo: run.combo, isOneTwo: isOneTwoCombo })
       }
 
+      // Ram Ettan voice: Superman 1A sound effect, seamlessly loops during combos
+      if (targetVariant === 'dummy') {
+        playRamEttanVoice({ isCombo: isOneTwoCombo || run.combo >= 2 })
+      }
+
       // Consumed
       if (hand.current) hand.current.strike = null
     },
-    [hand, showParticles, showDeformation]
+    [hand, showParticles, showDeformation, targetVariant]
   )
 
   const physics = usePhysics({ onImpact, weapon })
 
   useEffect(() => {
+    return () => {
+      stopRamEttanVoice({ immediate: true })
+    }
+  }, [])
+
+  useEffect(() => {
     startRun({ weapon: weapon.id })
     return subscribe((r) => {
       if (r.over) {
+        stopRamEttanVoice({ immediate: true })
         playKnockout()
         const timer = setTimeout(() => navigate('/results'), 750)
         return () => clearTimeout(timer)
@@ -364,6 +378,7 @@ export default function Lab() {
   }, [navigate, weapon.id])
 
   const handleReset = useCallback(() => {
+    stopRamEttanVoice({ immediate: true })
     sound.playVictory()
     startRun({ weapon: weapon.id })
     confetti({
@@ -378,6 +393,8 @@ export default function Lab() {
       point: { x: 0, y: 1.34, z: 0.12 },
       localPoint: { x: 0, y: 0.03, z: 0.12 },
       localTravel: { x: 0, y: 0, z: -1 },
+      travel: { x: 0, y: 0, z: -1 },
+      normal: { x: 0, y: 0, z: 1 },
       region: 'nose',
       regionLabel: 'NOSEBREAKER!',
       regionDamage: 1.5,
@@ -525,7 +542,7 @@ export default function Lab() {
     },
     {
       id: 'dummy',
-      label: 'Crash Dummy',
+      label: 'Ram Ettan',
       renderIcon: (active) => <SvgDummy active={active} />,
     },
   ]
@@ -739,6 +756,9 @@ export default function Lab() {
                       type="button"
                       className={`segmented-pill-btn ${active ? 'active' : ''}`}
                       onClick={() => {
+                        if (opt.id !== 'dummy') {
+                          stopRamEttanVoice({ immediate: true })
+                        }
                         setTargetVariant(opt.id)
                         sound.playClick()
                       }}

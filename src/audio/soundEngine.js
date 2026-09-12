@@ -63,6 +63,44 @@ function getDistortionCurve() {
   return distortionCurve
 }
 
+let ramEttanAudio = null
+let ramEttanBuffer = null
+let ramEttanLoading = false
+let activeRamEttanSource = null
+let activeRamEttanGain = null
+let comboLoopTimer = null
+let isVoicePlaying = false
+
+/**
+ * Pre-fetch and decode Superman 1A audio buffer into Web Audio API memory
+ * for zero-latency, gapless seamless looping during combos.
+ */
+async function loadRamEttanBuffer() {
+  if (ramEttanBuffer || ramEttanLoading || typeof window === 'undefined') return
+  ramEttanLoading = true
+  try {
+    const res = await fetch('/audio/superman_1a.mp3?v=2')
+    const arrayBuffer = await res.arrayBuffer()
+    const ctx = getAudioContext() || new (window.AudioContext || window.webkitAudioContext)()
+    ramEttanBuffer = await new Promise((resolve, reject) => {
+      const p = ctx.decodeAudioData(arrayBuffer, resolve, reject)
+      if (p && typeof p.then === 'function') {
+        p.then(resolve).catch(reject)
+      }
+    })
+  } catch (err) {
+    // Non-fatal, fallback to HTML5 Audio element
+    console.warn('Ram Ettan audio buffer decode:', err)
+  } finally {
+    ramEttanLoading = false
+  }
+}
+
+if (typeof window !== 'undefined') {
+  // Pre-load audio buffer in background for instant responsiveness
+  setTimeout(loadRamEttanBuffer, 50)
+}
+
 /**
  * Toggle or set mute state
  */
@@ -71,10 +109,162 @@ export function setMuted(muted) {
   if (masterGain && audioCtx) {
     masterGain.gain.setValueAtTime(isMuted ? 0 : 0.85, audioCtx.currentTime)
   }
+  if (activeRamEttanGain && audioCtx) {
+    activeRamEttanGain.gain.setValueAtTime(isMuted ? 0 : 0.95, audioCtx.currentTime)
+  }
+  if (ramEttanAudio) {
+    ramEttanAudio.muted = isMuted
+  }
 }
 
 export function getMuted() {
   return isMuted
+}
+
+/**
+ * Play Superman 1A voice line when Ram Ettan is hit.
+ * Features:
+ * 1. Single hits: plays through completely without cutting off midway.
+ * 2. Combos: seamlessly loops the "1A!" chant without interruption or gaps.
+ * 3. Graceful combo finish: when combo window expires, sets loop = false so the
+ *    current cry finishes naturally to completion without sudden cutoff.
+ */
+export function playRamEttanVoice({ isCombo = false } = {}) {
+  if (isMuted || typeof window === 'undefined') return
+
+  const ctx = getAudioContext()
+
+  // Primary path: Web Audio API AudioBuffer (sample-accurate, zero-latency seamless looping)
+  if (ramEttanBuffer && ctx) {
+    if (activeRamEttanSource && isVoicePlaying) {
+      if (isCombo) {
+        activeRamEttanSource.loop = true
+        if (comboLoopTimer) clearTimeout(comboLoopTimer)
+        comboLoopTimer = setTimeout(() => {
+          if (activeRamEttanSource) {
+            activeRamEttanSource.loop = false
+          }
+          comboLoopTimer = null
+        }, 1300)
+      }
+      return
+    }
+
+    // Start fresh playback
+    try {
+      const source = ctx.createBufferSource()
+      source.buffer = ramEttanBuffer
+      source.loop = Boolean(isCombo)
+
+      const voiceGain = ctx.createGain()
+      voiceGain.gain.setValueAtTime(isMuted ? 0 : 0.95, ctx.currentTime)
+
+      source.connect(voiceGain)
+      voiceGain.connect(masterGain || ctx.destination)
+
+      activeRamEttanSource = source
+      activeRamEttanGain = voiceGain
+      isVoicePlaying = true
+
+      source.onended = () => {
+        if (activeRamEttanSource === source) {
+          activeRamEttanSource = null
+          activeRamEttanGain = null
+          isVoicePlaying = false
+        }
+      }
+
+      source.start(0)
+
+      if (isCombo) {
+        if (comboLoopTimer) clearTimeout(comboLoopTimer)
+        comboLoopTimer = setTimeout(() => {
+          if (activeRamEttanSource) {
+            activeRamEttanSource.loop = false
+          }
+          comboLoopTimer = null
+        }, 1300)
+      }
+      return
+    } catch (err) {
+      console.warn('Web Audio playback error, falling back to HTML5 audio:', err)
+    }
+  }
+
+  // Fallback path: HTML5 Audio element (if buffer still loading or Web Audio unavailable)
+  if (!ramEttanAudio) {
+    ramEttanAudio = new Audio('/audio/superman_1a.mp3?v=2')
+    ramEttanAudio.volume = 0.95
+  }
+
+  ramEttanAudio.muted = isMuted
+
+  if (isCombo) {
+    ramEttanAudio.loop = true
+    if (comboLoopTimer) clearTimeout(comboLoopTimer)
+    comboLoopTimer = setTimeout(() => {
+      if (ramEttanAudio) ramEttanAudio.loop = false
+      comboLoopTimer = null
+    }, 1300)
+  }
+
+  // If already playing smoothly, do not cut it off midway
+  if (!ramEttanAudio.paused && !ramEttanAudio.ended && ramEttanAudio.currentTime > 0) {
+    return
+  }
+
+  ramEttanAudio.currentTime = 0
+  ramEttanAudio.play().catch(() => {})
+
+  // Trigger background buffer load if not yet done
+  if (!ramEttanBuffer && !ramEttanLoading) {
+    loadRamEttanBuffer()
+  }
+}
+
+export function stopRamEttanVoice({ immediate = true } = {}) {
+  if (comboLoopTimer) {
+    clearTimeout(comboLoopTimer)
+    comboLoopTimer = null
+  }
+
+  if (activeRamEttanSource) {
+    if (immediate) {
+      try {
+        if (activeRamEttanGain && audioCtx) {
+          activeRamEttanGain.gain.setValueAtTime(activeRamEttanGain.gain.value, audioCtx.currentTime)
+          activeRamEttanGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.03)
+          setTimeout(() => {
+            try {
+              activeRamEttanSource?.stop()
+            } catch {}
+            activeRamEttanSource = null
+            activeRamEttanGain = null
+            isVoicePlaying = false
+          }, 35)
+        } else {
+          activeRamEttanSource.stop()
+          activeRamEttanSource = null
+          activeRamEttanGain = null
+          isVoicePlaying = false
+        }
+      } catch {
+        activeRamEttanSource = null
+        activeRamEttanGain = null
+        isVoicePlaying = false
+      }
+    } else {
+      activeRamEttanSource.loop = false
+    }
+  }
+
+  if (ramEttanAudio) {
+    ramEttanAudio.loop = false
+    if (immediate) {
+      ramEttanAudio.pause()
+      ramEttanAudio.currentTime = 0
+    }
+  }
 }
 
 /**

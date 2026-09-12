@@ -7,6 +7,7 @@ import { REGIONS } from '../physics/head.js'
 import { reportHeadModelFailure } from '../capture/headModel.js'
 
 const HEAD_GLB = '/models/head_opt.glb'
+export const DUMMY_GLB = '/base_basic_shaded.glb'
 
 export function ScannedHead({ onBeforeCompile, url = HEAD_GLB }) {
   const { scene } = useGLTF(url)
@@ -42,6 +43,55 @@ export function ScannedHead({ onBeforeCompile, url = HEAD_GLB }) {
         object={head}
         scale={0.285}
         position={[0, -0.290, -0.045]}
+        rotation={[0, 0, 0]}
+      />
+      {/* Ultra-efficient low-poly shadow proxy caster for 60+ FPS */}
+      <mesh position={[0, 0.04, 0]} castShadow>
+        <sphereGeometry args={[0.11, 16, 12]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+    </group>
+  )
+}
+
+export function DummyHead({ onBeforeCompile, url = DUMMY_GLB }) {
+  const { scene } = useGLTF(url)
+
+  // Clean horizontal clipping plane positioned right at the collar clamp transition
+  const clipPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.18), [])
+
+  const head = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = false
+        child.receiveShadow = true
+        if (child.material) {
+          const mat = child.material.clone()
+          mat.clippingPlanes = [clipPlane]
+          mat.clipShadows = true
+          // Ensure baseColor map is set if texture was in emissiveMap
+          if (!mat.map && mat.emissiveMap) {
+            mat.map = mat.emissiveMap
+            mat.color.setRGB(1, 1, 1)
+          }
+          mat.roughness = Math.min(mat.roughness ?? 0.60, 0.55)
+          mat.metalness = Math.max(mat.metalness ?? 0.05, 0.02)
+          mat.onBeforeCompile = onBeforeCompile
+          child.material = mat
+        }
+      }
+    })
+    return clone
+  }, [scene, onBeforeCompile, clipPlane])
+
+  return (
+    <group>
+      {/* 3D Base Dummy Head: positioned to align head, chin, and nose proudly above clamp */}
+      <primitive
+        object={head}
+        scale={0.285}
+        position={[0.012, -0.325, -0.035]}
         rotation={[0, 0, 0]}
       />
       {/* Ultra-efficient low-poly shadow proxy caster for 60+ FPS */}
@@ -261,32 +311,20 @@ const HeadMesh = forwardRef(function HeadMesh(
     />
   )
 
+  const activeUrl = variant === 'scanned' ? modelUrl : DUMMY_GLB
+
   return (
     <group ref={ref} position={[0, 1.31, 0]}>
       <group ref={recoilRef}>
-        {/*
-          The stand-in head is the fallback in BOTH senses, and that is the
-          whole trick to this screen.
-
-          Suspense covers the seconds a GLB takes to download and parse. The
-          `variant` check covers the minutes a Tripo job takes to run, and the
-          case where it never finishes at all — out of credit, offline, or the
-          player never uploaded a photo. In every one of those the lab is
-          already open and already punchable; the generated head just appears
-          when it appears. Nothing here ever gates play on a network call.
-
-          Keyed by url so swapping in a freshly generated head remounts the
-          loader instead of showing the previous one.
-        */}
         <HeadModelBoundary
-          url={modelUrl}
+          url={activeUrl}
           fallback={<ProceduralHead skin={skin} onBeforeCompile={onBeforeCompile} />}
         >
           <Suspense fallback={<ProceduralHead skin={skin} onBeforeCompile={onBeforeCompile} />}>
             {variant === 'scanned' ? (
               <ScannedHead key={modelUrl} url={modelUrl} onBeforeCompile={onBeforeCompile} />
             ) : (
-              <ProceduralHead skin={skin} onBeforeCompile={onBeforeCompile} />
+              <DummyHead key={DUMMY_GLB} url={DUMMY_GLB} onBeforeCompile={onBeforeCompile} />
             )}
           </Suspense>
         </HeadModelBoundary>
@@ -602,6 +640,7 @@ export function ProceduralHead({ skin, onBeforeCompile }) {
 }
 
 useGLTF.preload(HEAD_GLB)
+useGLTF.preload(DUMMY_GLB)
 
 export default HeadMesh
 

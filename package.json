@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "See it. Do it. Regret it.",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

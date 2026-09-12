@@ -273,36 +273,46 @@ function Rig({
     let observedL = null
     let observedR = null
 
-    // STRICT SINGLE-HAND VISIBILITY:
-    // If only Left is detected, ONLY Left is observed (Right is null -> hidden).
-    // If only Right is detected, ONLY Right is observed (Left is null -> hidden).
-    // If both are detected, both are observed.
-    // If mouse is active (when no hands are in view), ONLY Right is observed.
-    // The speed-driven lunge goes to the projector rather than being subtracted
-    // from world Z afterwards. Subtracting from z only pushed the fist "toward
-    // the face" while the camera sat on the +Z axis; once the view orbited it
-    // shoved the glove sideways through the head instead. The projector applies
-    // it along its own view axis, which is what was meant all along.
-    if (hL?.present) {
-      const lungeL = Math.min(0.12, ((hL.speed ?? 0) / 4.8) * 0.12)
-      observedL = projectors.hand.project({
-        x: hL.x, y: hL.y, span: hL.span, lunge: lungeL, dt: delta,
-      })
-    }
+    // Ready guard stance positions (in front of chest at z = 0.24, y = 1.25)
+    // Aligns with active hand reach depth to eliminate sudden teleportation jumps
+    const guardL = { x: -0.19, y: 1.25, z: 0.24 }
+    const guardR = { x: 0.19, y: 1.25, z: 0.24 }
 
-    if (hR?.present) {
-      const lungeR = Math.min(0.12, ((hR.speed ?? 0) / 4.8) * 0.12)
-      observedR = projectors.hand.project({
-        x: hR.x, y: hR.y, span: hR.span, lunge: lungeR, dt: delta,
-      })
-    } else if (allowMouse && mouseActive.current && !cameraPosRef?.current?.isDragging && h.lostFor > MOUSE_TAKEOVER && !h.present) {
-      // Mouse cursor drives right hand if no webcam hands are present
-      const mouseSpan = mouseDown.current ? 0.22 : 0.12
-      observedR = projectors.mouse.project({
-        x: (state.pointer.x + 1) / 2,
-        y: (1 - state.pointer.y) / 2,
-        span: mouseSpan,
-      })
+    const hasWebcamHand = Boolean(hL?.present || hR?.present)
+
+    if (hasWebcamHand) {
+      // WEBCAM TRACKING ACTIVE:
+      // Strict 1-hand vs 2-hand display:
+      // If only Left is detected, ONLY Left is shown (Right is null -> hidden).
+      // If only Right is detected, ONLY Right is shown (Left is null -> hidden).
+      // If both are detected, both are shown.
+      if (hL?.present) {
+        const lungeL = Math.min(0.12, ((hL.speed ?? 0) / 4.8) * 0.12)
+        observedL = projectors.hand.project({
+          x: hL.x, y: hL.y, span: hL.span, lunge: lungeL, dt: delta,
+        })
+      }
+      if (hR?.present) {
+        const lungeR = Math.min(0.12, ((hR.speed ?? 0) / 4.8) * 0.12)
+        observedR = projectors.hand.project({
+          x: hR.x, y: hR.y, span: hR.span, lunge: lungeR, dt: delta,
+        })
+      }
+    } else {
+      // NO WEBCAM HANDS IN VIEW (Startup / Idle / Mouse Control):
+      // Fighter stands in ready boxing guard so hands are NEVER missing.
+      // Mouse cursor drives the right glove into punches, left glove guards.
+      if (allowMouse && (mouseActive.current || mouseDown.current) && !cameraPosRef?.current?.isDragging) {
+        const mouseSpan = mouseDown.current ? 0.22 : 0.12
+        observedR = projectors.mouse.project({
+          x: (state.pointer.x + 1) / 2,
+          y: (1 - state.pointer.y) / 2,
+          span: mouseSpan,
+        })
+      } else {
+        observedR = guardR
+      }
+      observedL = guardL
     }
 
     physics.step(Math.min(delta, 0.1), observedL, observedR)
