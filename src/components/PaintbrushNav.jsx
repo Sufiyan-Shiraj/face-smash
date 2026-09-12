@@ -3,7 +3,7 @@ import { UploadCloud, Box, Gamepad2, Volume2, VolumeX } from 'lucide-react'
 import { CrownDoodle } from './Doodles.jsx'
 import { sound } from '../utils/uiAudio.js'
 import { useParallax } from '../utils/useParallax.js'
-import navbarImg from '../assets/common/paintbrush_navbar.png'
+import navbarImg from '../assets/common/paintbrush_navbar.webp'
 
 export function PaintbrushNav({
   currentView,

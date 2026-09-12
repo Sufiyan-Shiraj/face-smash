@@ -261,7 +261,7 @@ own.
 
 ### Project Demo
 # Video
-[Add your demo video link here]
+[Watch Demo & Screen Recording](https://drive.google.com/file/d/17dfkqV5nf8Bu-0n6V9yOUiZgQ0e6L8ll/view?usp=sharing)
 *A full run: uploading a photo, the head being generated, and a live punching
 session with hand tracking driving the impacts.*
 
