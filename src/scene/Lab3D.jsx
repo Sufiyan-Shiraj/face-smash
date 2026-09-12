@@ -421,12 +421,34 @@ export default function Lab3D({
       </Suspense>
 
       <ambientLight intensity={0.42} />
+      {/*
+        The only shadow caster in the scene, and its frustum is bounded.
+
+        Left to itself three.js gives a directional light a 10 x 10 m orthographic
+        shadow camera. That covers the entire room, which costs twice: every
+        decorative mesh in the backdrop, the punching bag and the equipment rack
+        all get drawn into the shadow map even though nothing of theirs is
+        visible, and the 1024 map is stretched over 10 m, so the shadows that DO
+        matter — the head and the player's arms — get about a centimetre per
+        texel and come out soft and blocky.
+
+        Bounding it to the play area culls the distant casters out of the shadow
+        pass and simultaneously multiplies the effective shadow resolution by
+        about four, which is the rare case of cheaper and better at once.
+      */}
       <directionalLight
         position={[1.4, 2.8, 1.8]}
         intensity={2.6}
         color="#fff0de"
         castShadow
         shadow-mapSize={[1024, 1024]}
+        shadow-camera-left={-1.3}
+        shadow-camera-right={1.3}
+        shadow-camera-top={1.3}
+        shadow-camera-bottom={-1.3}
+        shadow-camera-near={0.5}
+        shadow-camera-far={7}
+        shadow-normalBias={0.02}
       />
       <directionalLight position={[-2.4, 1.6, 1.2]} intensity={0.8} color="#6fb4ff" />
       {/* Vibrant Hot Pink Rim Backlight */}
@@ -921,6 +943,19 @@ function WorkshopStand() {
   )
 }
 
+/**
+ * Floating dust motes.
+ *
+ * THE KEEP-OUT SPHERE.
+ *
+ * The spawn volume runs to z = +1.0 while the camera sits at z = 1.15, so a mote
+ * can end up ~15 cm from the lens. A 1.6 cm additive sprite that close covers a
+ * large part of the frame as a bright smear. The radius here is small — it only
+ * excludes the pathological on-the-lens case and leaves the dust field itself
+ * unchanged.
+ */
+const KEEP_OUT_SQ = 0.35 * 0.35
+
 function AtmosphericDust() {
   const count = 140
   const pointsRef = useRef(null)
@@ -944,6 +979,9 @@ function AtmosphericDust() {
     const t = state.clock.getElapsedTime()
     const posAttr = pointsRef.current.geometry.attributes.position
     const arr = posAttr.array
+    const camX = state.camera.position.x
+    const camY = state.camera.position.y
+    const camZ = state.camera.position.z
 
     for (let i = 0; i < count; i++) {
       const idx = i * 3
@@ -957,6 +995,13 @@ function AtmosphericDust() {
       if (arr[idx + 1] > 3.0) arr[idx + 1] = 0.8
       if (arr[idx] < -2.0) arr[idx] = 2.0
       if (arr[idx] > 2.0) arr[idx] = -2.0
+
+      // Keep-out: a mote that has drifted onto the lens is pushed back out to
+      // the far edge of the volume rather than being allowed to fill the frame.
+      const dx = arr[idx] - camX
+      const dy = arr[idx + 1] - camY
+      const dz = arr[idx + 2] - camZ
+      if (dx * dx + dy * dy + dz * dz < KEEP_OUT_SQ) arr[idx + 2] = -1.9
     }
     posAttr.needsUpdate = true
   })
@@ -1381,8 +1426,19 @@ function CagedWorkLamps() {
             )
           })}
 
-          {/* Localized warm cone light */}
-          <pointLight color="#ffe2b0" intensity={1.6} distance={3.2} decay={2} castShadow />
+          {/*
+            Localized warm cone light. NOT a shadow caster, and that one word is
+            the single biggest thing in this scene's frame budget.
+
+            A point light's shadow is a CUBE map, so three.js re-renders every
+            shadow-casting mesh in the scene six times per light, per frame.
+            There are two of these lamps, so `castShadow` here was costing twelve
+            extra full scene passes — against 97 shadow-casting meshes — to
+            produce shadows from a decorative lamp 2.7 m up that is barely in
+            frame. The key light is a single directional light and does all the
+            shadow work that is actually visible.
+          */}
+          <pointLight color="#ffe2b0" intensity={1.6} distance={3.2} decay={2} />
         </group>
       ))}
     </group>
