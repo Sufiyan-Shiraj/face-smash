@@ -191,9 +191,9 @@ export default function Effects({ effectsRef }) {
        * @param {[number,number,number]} [tint] Color tint.
        */
       burst(impact, tint) {
-        const s = impact.strength
-        const n = impact.normal
-        const t = impact.travel
+        const s = impact?.strength ?? 0.5
+        const n = impact?.normal ?? { x: 0, y: 0, z: 1 }
+        const t = impact?.travel ?? impact?.localTravel ?? { x: 0, y: 0, z: -1 }
         const tl = Math.hypot(t.x, t.y, t.z) || 1
         const tx = t.x / tl
         const ty = t.y / tl
