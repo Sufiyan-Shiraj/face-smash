@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import './app/theme.css'
+import './utils/preloadAssets.js'
 import Shell from './app/Shell.jsx'
 import Upload from './routes/Upload.jsx'
 import Scan from './routes/Scan.jsx'

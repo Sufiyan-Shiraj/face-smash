@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { HAND_CONNECTIONS } from '../tracking/gestures.js'
-import webcamFrameImg from '../assets/smash/webcam.png'
+import webcamFrameImg from '../assets/smash/webcam.webp'
 
 export default function WebcamFeed({ videoRef, hand, status }) {
   const videoCanvasRef = useRef(null)

@@ -7,8 +7,10 @@ import { CoolCatDoodle, SmileyDoodle, CurvedArrow, TornPaperBottom } from '../co
 import { sound } from '../utils/uiAudio.js'
 import { useParallax } from '../utils/useParallax.js'
 
-import logoImg from '../assets/upload/hero_logo.png'
-import drawingImg from '../assets/upload/punched_dude.png'
+import logoImg from '../assets/upload/hero_logo.webp'
+import drawingImg from '../assets/upload/punched_dude.webp'
+import crtComputerImg from '../assets/upload/crt_computer.webp'
+import bgCanvasImg from '../assets/upload/background_canvas.webp'
 
 import { ACCEPTED_TYPES, decodeImageFile, setViews } from '../capture/imageSource.js'
 import { scoreFrame } from '../capture/frameScoring.js'
@@ -167,7 +169,7 @@ export default function Upload() {
       <div
         className="absolute -inset-8 w-[calc(100%+64px)] h-[calc(100%+64px)] bg-cover bg-center pointer-events-none z-0 parallax-layer"
         style={{
-          backgroundImage: 'url(/uploads/background_canvas.png)',
+          backgroundImage: `url(${bgCanvasImg})`,
           transform: `translate3d(${bgOffset.x}px, ${bgOffset.y}px, 0)`,
         }}
       />
@@ -502,7 +504,7 @@ export default function Upload() {
               className="relative cursor-pointer group w-full flex items-end justify-end -mb-1"
             >
               <img
-                src="/uploads/crt_computer.png"
+                src={crtComputerImg}
                 alt="Retro CRT Monitor with Rubber Duck"
                 className={`w-full h-auto max-h-[58vh] sm:max-h-[62vh] lg:max-h-[68vh] xl:max-h-[72vh] object-contain object-right-bottom drop-shadow-2xl origin-bottom-right ${
                   duckWiggle ? 'scale-108 rotate-2' : ''

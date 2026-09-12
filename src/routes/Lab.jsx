@@ -26,12 +26,12 @@ import { useParallax } from '../utils/useParallax.js'
 import { CrownDoodle, TornPaperBottom } from '../components/Doodles.jsx'
 
 // Assets
-import background3Img from '../assets/smash/background3.png'
-import glovePinkImg from '../assets/smash/glove_pink.png'
-import gloveSpikedImg from '../assets/smash/glove_spiked.png'
-import gloveDuckyImg from '../assets/smash/glove_ducky.png'
-import gloveHammerImg from '../assets/smash/glove_hammer.png'
-import gloveGauntletImg from '../assets/smash/glove_gauntlet.png'
+import background3Img from '../assets/smash/background3.webp'
+import glovePinkImg from '../assets/smash/glove_pink.webp'
+import gloveSpikedImg from '../assets/smash/glove_spiked.webp'
+import gloveDuckyImg from '../assets/smash/glove_ducky.webp'
+import gloveHammerImg from '../assets/smash/glove_hammer.webp'
+import gloveGauntletImg from '../assets/smash/glove_gauntlet.webp'
 
 import './lab.css'
 
