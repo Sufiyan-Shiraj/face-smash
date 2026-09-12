@@ -204,17 +204,21 @@ For Software:
 
 # Screenshots (Add at least 3)
 
-![Screenshot1](Add screenshot 1 here with proper name)
-*The upload screen — drop in one photo of your face and it is cropped, scored
-and queued for 3D reconstruction.*
+### 1. Upload & Photo Drop Arena
+![Upload Screen](./screenshots/Screenshot%202026-09-12%20at%205.49.34%E2%80%AFAM.png)
+*The upload screen — drop in a photo or video to be cropped, scored, and queued for 3D reconstruction.*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*The Smash Lab mid-punch — tracked hands driving gloves in world space, with
-the damage, hits and combo readout live on the right.*
+### 2. 3D Face Scanner & Telemetry Console
+![Scan and 3D Console](./screenshots/Screenshot%202026-09-12%20at%205.49.46%E2%80%AFAM.png)
+*The 3D scanning console — real-time facial telemetry, depth estimation, and interactive 3D point cloud visualization.*
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*An impact landing — face deformation, particles and the comic hit frame that
-fires on contact.*
+### 3. Live Facial Landmark Tracking & Multi-Angle Calibration
+![Live Calibration](./screenshots/Screenshot%202026-09-12%20at%205.49.55%E2%80%AFAM.png)
+*Live facial landmark calibration — MediaPipe head pose tracking and multi-angle capture locking in the face mesh.*
+
+### 4. Smash Lab 3D Physics Combat Arena
+![Smash Lab](./screenshots/Screenshot%202026-09-12%20at%205.50.36%E2%80%AFAM.png)
+*The Smash Lab in action — webcam hand tracking driving 3D boxing gloves against a deformable head with real-time physics and comic VFX.*
 
 # Diagrams
 

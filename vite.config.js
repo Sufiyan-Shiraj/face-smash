@@ -20,6 +20,9 @@ export default defineConfig(({ mode }) => {
       host: true, // phones/second laptop on the same wifi can hit the dev server
       port: 5180, // 5173 belongs to another project on this machine
       strictPort: true,
+      watch: {
+        ignored: ['**/screenshots/**'],
+      },
     },
   }
 })
