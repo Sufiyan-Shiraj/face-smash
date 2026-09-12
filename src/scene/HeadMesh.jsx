@@ -8,6 +8,8 @@ import { reportHeadModelFailure } from '../capture/headModel.js'
 
 const HEAD_GLB = '/models/head_opt.glb'
 export const DUMMY_GLB = '/base_basic_shaded.glb'
+export const SREEKUTTY_GLB = '/sreekutty_shaded.glb'
+export const MATHAYI_GLB = '/mathayi_shaded.glb'
 
 export function ScannedHead({ onBeforeCompile, url = HEAD_GLB }) {
   const { scene } = useGLTF(url)
@@ -92,6 +94,104 @@ export function DummyHead({ onBeforeCompile, url = DUMMY_GLB }) {
         object={head}
         scale={0.285}
         position={[0.012, -0.325, -0.035]}
+        rotation={[0, 0, 0]}
+      />
+      {/* Ultra-efficient low-poly shadow proxy caster for 60+ FPS */}
+      <mesh position={[0, 0.04, 0]} castShadow>
+        <sphereGeometry args={[0.11, 16, 12]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+    </group>
+  )
+}
+
+export function SreekuttyHead({ onBeforeCompile, url = SREEKUTTY_GLB }) {
+  const { scene } = useGLTF(url)
+
+  // Clean horizontal clipping plane positioned right at the collar clamp transition
+  const clipPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.18), [])
+
+  const head = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = false
+        child.receiveShadow = true
+        if (child.material) {
+          const mat = child.material.clone()
+          mat.clippingPlanes = [clipPlane]
+          mat.clipShadows = true
+          // Ensure baseColor map is set if texture was in emissiveMap
+          if (!mat.map && mat.emissiveMap) {
+            mat.map = mat.emissiveMap
+            mat.color.setRGB(1, 1, 1)
+          }
+          mat.roughness = Math.min(mat.roughness ?? 0.60, 0.55)
+          mat.metalness = Math.max(mat.metalness ?? 0.05, 0.02)
+          mat.onBeforeCompile = onBeforeCompile
+          child.material = mat
+        }
+      }
+    })
+    return clone
+  }, [scene, onBeforeCompile, clipPlane])
+
+  return (
+    <group>
+      {/* 3D Sreekutty Head: positioned to align head, chin, and nose proudly above clamp */}
+      <primitive
+        object={head}
+        scale={0.285}
+        position={[0.005, -0.305, -0.035]}
+        rotation={[0, 0, 0]}
+      />
+      {/* Ultra-efficient low-poly shadow proxy caster for 60+ FPS */}
+      <mesh position={[0, 0.04, 0]} castShadow>
+        <sphereGeometry args={[0.11, 16, 12]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+    </group>
+  )
+}
+
+export function MathayiHead({ onBeforeCompile, url = MATHAYI_GLB }) {
+  const { scene } = useGLTF(url)
+
+  // Clean horizontal clipping plane positioned right at the collar clamp transition
+  const clipPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.18), [])
+
+  const head = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = false
+        child.receiveShadow = true
+        if (child.material) {
+          const mat = child.material.clone()
+          mat.clippingPlanes = [clipPlane]
+          mat.clipShadows = true
+          // Ensure baseColor map is set if texture was in emissiveMap
+          if (!mat.map && mat.emissiveMap) {
+            mat.map = mat.emissiveMap
+            mat.color.setRGB(1, 1, 1)
+          }
+          mat.roughness = Math.min(mat.roughness ?? 0.60, 0.55)
+          mat.metalness = Math.max(mat.metalness ?? 0.05, 0.02)
+          mat.onBeforeCompile = onBeforeCompile
+          child.material = mat
+        }
+      }
+    })
+    return clone
+  }, [scene, onBeforeCompile, clipPlane])
+
+  return (
+    <group>
+      {/* 3D Mathayi Head: positioned to align head, chin, and nose proudly above clamp */}
+      <primitive
+        object={head}
+        scale={0.285}
+        position={[0.005, -0.315, -0.035]}
         rotation={[0, 0, 0]}
       />
       {/* Ultra-efficient low-poly shadow proxy caster for 60+ FPS */}
@@ -311,7 +411,14 @@ const HeadMesh = forwardRef(function HeadMesh(
     />
   )
 
-  const activeUrl = variant === 'scanned' ? modelUrl : DUMMY_GLB
+  const activeUrl =
+    variant === 'scanned'
+      ? modelUrl
+      : variant === 'sreekutty'
+        ? SREEKUTTY_GLB
+        : variant === 'mathayi'
+          ? MATHAYI_GLB
+          : DUMMY_GLB
 
   return (
     <group ref={ref} position={[0, 1.31, 0]}>
@@ -323,6 +430,10 @@ const HeadMesh = forwardRef(function HeadMesh(
           <Suspense fallback={<ProceduralHead skin={skin} onBeforeCompile={onBeforeCompile} />}>
             {variant === 'scanned' ? (
               <ScannedHead key={modelUrl} url={modelUrl} onBeforeCompile={onBeforeCompile} />
+            ) : variant === 'sreekutty' ? (
+              <SreekuttyHead key={SREEKUTTY_GLB} url={SREEKUTTY_GLB} onBeforeCompile={onBeforeCompile} />
+            ) : variant === 'mathayi' ? (
+              <MathayiHead key={MATHAYI_GLB} url={MATHAYI_GLB} onBeforeCompile={onBeforeCompile} />
             ) : (
               <DummyHead key={DUMMY_GLB} url={DUMMY_GLB} onBeforeCompile={onBeforeCompile} />
             )}
@@ -641,6 +752,8 @@ export function ProceduralHead({ skin, onBeforeCompile }) {
 
 useGLTF.preload(HEAD_GLB)
 useGLTF.preload(DUMMY_GLB)
+useGLTF.preload(SREEKUTTY_GLB)
+useGLTF.preload(MATHAYI_GLB)
 
 export default HeadMesh
 

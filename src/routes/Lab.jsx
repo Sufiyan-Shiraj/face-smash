@@ -85,6 +85,81 @@ function SvgDummy({ active }) {
   )
 }
 
+function SvgSreekutty({ active }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="custom-svg-icon">
+      <defs>
+        <linearGradient id="sreeGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={active ? '#ff66c4' : '#c084fc'} />
+          <stop offset="100%" stopColor={active ? '#a855f7' : '#475569'} />
+        </linearGradient>
+      </defs>
+      {/* Stylized ponytail / hair silhouette */}
+      <path
+        d="M12 3C8.5 3 6.5 5.5 6.5 9C6.5 12.5 8.8 14.5 12 14.5C15.2 14.5 17.5 12.5 17.5 9C17.5 5.5 15.5 3 12 3Z"
+        fill="url(#sreeGrad)"
+        fillOpacity="0.35"
+        stroke={active ? '#ff66c4' : '#c084fc'}
+        strokeWidth="1.6"
+      />
+      {/* Side hair locks */}
+      <path
+        d="M6.5 8C5 9.5 4.5 12 5.5 14C6.2 15.5 8 16 8 16"
+        stroke={active ? '#ff66c4' : '#c084fc'}
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M17.5 8C19 9.5 19.5 12 18.5 14C17.8 15.5 16 16 16 16"
+        stroke={active ? '#ff66c4' : '#c084fc'}
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+      {/* Shoulders */}
+      <path
+        d="M5 22C5 18.5 8 17 12 17C16 17 19 18.5 19 22"
+        stroke={active ? '#ff66c4' : '#c084fc'}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function SvgMathayi({ active }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="custom-svg-icon">
+      <defs>
+        <linearGradient id="mathGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={active ? '#38ef7d' : '#11998e'} />
+          <stop offset="100%" stopColor={active ? '#10b981' : '#334155'} />
+        </linearGradient>
+      </defs>
+      {/* Stylized face outline */}
+      <path
+        d="M12 2C8 2 6.5 4.5 6.5 8.5C6.5 12 8.5 14.5 12 14.5C15.5 14.5 17.5 12 17.5 8.5C17.5 4.5 16 2 12 2Z"
+        fill="url(#mathGrad)"
+        fillOpacity="0.35"
+        stroke={active ? '#38ef7d' : '#10b981'}
+        strokeWidth="1.6"
+      />
+      {/* Modern hair sweep */}
+      <path
+        d="M7 6C8.5 3.5 12 3 17 4C16 6 14.5 7 12 7C9.5 7 7.5 6.5 7 6Z"
+        fill={active ? '#38ef7d' : '#10b981'}
+        fillOpacity="0.6"
+      />
+      {/* Shoulders */}
+      <path
+        d="M4 22C4 18 7.5 16.5 12 16.5C16.5 16.5 20 18 20 22"
+        stroke={active ? '#38ef7d' : '#10b981'}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 function SvgSmashFist() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="smash-svg-fist">
@@ -544,6 +619,16 @@ export default function Lab() {
       id: 'dummy',
       label: 'Ram Ettan',
       renderIcon: (active) => <SvgDummy active={active} />,
+    },
+    {
+      id: 'sreekutty',
+      label: 'Sreekutty',
+      renderIcon: (active) => <SvgSreekutty active={active} />,
+    },
+    {
+      id: 'mathayi',
+      label: 'Mathayi',
+      renderIcon: (active) => <SvgMathayi active={active} />,
     },
   ]
 
